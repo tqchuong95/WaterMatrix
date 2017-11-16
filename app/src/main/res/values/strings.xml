@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Music Application</string>
+    <string name="button_search">Search Devices</string>
+    <string name="textview_empty">Nothing here</string>
+    <string name="searching_devices">Searching for devices...</string>
+    <string name="error">Error</string>
+    <string name="enabling_blt">Enabling Bluetooth</string>
+    <string name="failed_to_search">Failed to search Devices</string>
+    <string name="try_again">Try again</string>
+    <string name="none">None</string>
+    <string name="failed_to_enable_bluetooth">Failed to enable Bluetooth</string>
+    <string name="asking_to_connect">Asking to connect</string>
+    <string name="connect">Connect</string>
+    <string name="clear">Clear</string>
+    <string name="reconnect">Reconnect</string>
+    <string name="btn_Selection1">Option 1</string>
+    <string name="btn_Selection2">Option 2</string>
+    <string name="btn_play">Play</string>
+    <string name="btn_stop">Stop</string>
+</resources>
