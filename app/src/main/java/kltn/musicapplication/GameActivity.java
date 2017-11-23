@@ -43,7 +43,6 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     private Bluetooth bluetooth;
     private Handler handler;
     private Toolbar toolbar_connect;
-    private RecyclerView recyclerView_effect;
     private ProgressBarIndeterminateDeterminate progressBar_connect;
     private LinearLayout coordinatorLayout_connect;
     private Button button_reconnect;
@@ -70,7 +69,6 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
         overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
 
-        recyclerView_effect = (RecyclerView) findViewById(R.id.recv_effect);
         toolbar_connect = (Toolbar) findViewById(R.id.toolbar_connect);
         progressBar_connect = (ProgressBarIndeterminateDeterminate) findViewById(R.id.prog_toolbar_connect);
         coordinatorLayout_connect = (LinearLayout) findViewById(R.id.coordinator_layout_connect);
@@ -93,7 +91,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                 });
         handler = new myHandler(GameActivity.this);
         bluetooth = new Bluetooth(this, handler);
-        bluetoothDevice = getIntent().getExtras().getParcelable(ResActivity.EXTRA_DEVICE);
+        bluetoothDevice = getIntent().getExtras().getParcelable(MainActivity.EXTRA_DEVICE);
         setTitle(bluetoothDevice.getName());
         bluetooth.connectToDevice(bluetoothDevice);
 
@@ -713,7 +711,8 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
     };
-    @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == Bluetooth.REQUEST_ENABLE_BLT) {
             if (resultCode == RESULT_OK) {

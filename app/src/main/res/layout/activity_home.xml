@@ -27,6 +27,16 @@
         android:background="#3fffffff"
         android:text="Option 2: Caro" />
 
+    <Button
+        android:id="@+id/btn_Selection3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/btn_Selection2"
+        android:background="#3fffffff"
+        android:text="Option 3: Music" />
+
     <TextView
         android:id="@+id/txtView"
         android:layout_width="match_parent"

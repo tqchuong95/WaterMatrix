@@ -97,7 +97,7 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
                 });
         handler = new myHandler(ConnectActivity.this);
         bluetooth = new Bluetooth(this, handler);
-        bluetoothDevice = getIntent().getExtras().getParcelable(ResActivity.EXTRA_DEVICE);
+        bluetoothDevice = getIntent().getExtras().getParcelable(MainActivity.EXTRA_DEVICE);
         setTitle(bluetoothDevice.getName());
         bluetooth.connectToDevice(bluetoothDevice);
 

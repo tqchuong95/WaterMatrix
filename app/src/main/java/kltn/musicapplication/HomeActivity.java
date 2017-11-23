@@ -24,6 +24,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private Button btn_Selection1;
     private Button btn_Selection2;
+    private Button btn_Selection3;
     private BluetoothDevice bluetoothDevice;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -40,13 +41,14 @@ public class HomeActivity extends AppCompatActivity {
 
         btn_Selection1 = (Button) findViewById(R.id.btn_Selection1);
         btn_Selection2 = (Button) findViewById(R.id.btn_Selection2);
+        btn_Selection3 = (Button) findViewById(R.id.btn_Selection3);
 
-        bluetoothDevice = getIntent().getExtras().getParcelable(ResActivity.EXTRA_DEVICE);
+        bluetoothDevice = getIntent().getExtras().getParcelable(MainActivity.EXTRA_DEVICE);
         btn_Selection1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(HomeActivity.this, ConnectActivity.class);
-                intent.putExtra(ResActivity.EXTRA_DEVICE, bluetoothDevice);
+                intent.putExtra(MainActivity.EXTRA_DEVICE, bluetoothDevice);
                 startActivity(intent);
             }
         });
@@ -55,7 +57,16 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(HomeActivity.this, GameActivity.class);
-                intent.putExtra(ResActivity.EXTRA_DEVICE, bluetoothDevice);
+                intent.putExtra(MainActivity.EXTRA_DEVICE, bluetoothDevice);
+                startActivity(intent);
+            }
+        });
+
+        btn_Selection3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(HomeActivity.this, MusicActivity.class);
+                intent.putExtra(MainActivity.EXTRA_DEVICE, bluetoothDevice);
                 startActivity(intent);
             }
         });
