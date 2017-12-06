@@ -69,7 +69,9 @@
                 android:visibility="gone" />
         </LinearLayout>
     </LinearLayout>
+
     <RelativeLayout
+        android:id="@+id/relLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 

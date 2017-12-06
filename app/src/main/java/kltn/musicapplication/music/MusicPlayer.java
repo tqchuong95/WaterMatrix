@@ -1,4 +1,4 @@
-package kltn.musicapplication.Music;
+package kltn.musicapplication.music;
 
 import android.media.AudioManager;
 import android.media.MediaPlayer;

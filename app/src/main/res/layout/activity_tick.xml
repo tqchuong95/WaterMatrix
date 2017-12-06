@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:id="@+id/coordinator_layout_connect"
+    android:orientation="vertical"
+    tools:context=".TickActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar_connect"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:titleTextColor="@color/white"
+        app:subtitleTextColor="@color/white"
+        android:background="#3fffffff">
+        <kltn.musicapplication.views.ToggleButton
+            android:id="@+id/tog_connect"
+            android:layout_width="wrap_content"
+            android:layout_height="25dp"
+            android:layout_gravity="end"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            />
+    </android.support.v7.widget.Toolbar>
+    <kltn.musicapplication.views.ProgressBarIndeterminateDeterminate
+        android:id="@+id/prog_toolbar_connect"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="invisible">
+    </kltn.musicapplication.views.ProgressBarIndeterminateDeterminate>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:id="@+id/linear_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/btn_reconnect"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="#3fffffff"
+                android:enabled="false"
+                android:text="@string/reconnect"
+                android:textColor="@color/white" />
+
+            <Button
+                android:id="@+id/btn_clear"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="#3fffffff"
+                android:enabled="true"
+                android:text="@string/clear"
+                android:textColor="@color/white"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linear_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="fill_horizontal">
+            <ListView
+                android:id="@+id/list_view_effect"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1">
+            </ListView>
+
+            <Button
+                android:id="@+id/btn_send_data"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:onClick="btnsend"
+                android:text="SEND" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

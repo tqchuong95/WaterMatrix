@@ -43,6 +43,9 @@ public class MainActivity extends AppCompatActivity {
     public static final String EXTRA_DEVICE = "extra_device";
     public static final String EXTRA_BLUETOOTH = "extra_ble";
 
+    public static int SWIPE_THRESHOLD = 100;
+    public static int SWIPE_VELOCITY_THRESHOLD = 100;
+
     private Toolbar toolbar;
     private ProgressBarDeterminate progressBar_toolbar;
     private Button button_search;

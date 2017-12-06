@@ -9,7 +9,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
-        android:name=".Music.App"
+        android:name=".music.App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="Water Matrix"
@@ -27,6 +27,9 @@
         <activity android:name=".HomeActivity"></activity>
         <activity android:name=".MusicActivity"></activity>
         <activity android:name=".GameActivity"></activity>
+        <activity android:name=".TickActivity"></activity>
+        <activity android:name=".SelecMusicActivity"></activity>
+        <activity android:name=".MSEditorActivity"></activity>
     </application>
 
 </manifest>

@@ -18,11 +18,13 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
@@ -38,6 +40,7 @@ import kltn.musicapplication.views.ToggleButton;
 
 public class GameActivity extends AppCompatActivity implements View.OnClickListener {
 
+    private RelativeLayout relativeLayout;
     private BluetoothDevice bluetoothDevice;
     private Snackbar snackbar_TurnOn;
     private Bluetooth bluetooth;
@@ -54,6 +57,9 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     private boolean check = true;
 
     private String effect;
+
+    private GestureDetector gestureDetector;
+    private float initialX, initialY;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
@@ -81,6 +87,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
         button_clear.setOnClickListener(this);
         button_reconnect.setOnClickListener(this);
+        init();
 
         snackbar_TurnOn = Snackbar.make(coordinatorLayout_connect, "Bluetooth turned off", Snackbar.LENGTH_INDEFINITE)
                 .setAction("Turn On", new View.OnClickListener() {
@@ -100,13 +107,39 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         else
             toggleButton_connect.setToggleOff();
 
-        init();
+        gestureDetector = new GestureDetector(this, new MyGesture());
+        /*coordinatorLayout_connect.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                gestureDetector.onTouchEvent(motionEvent);
+                return true;
+            }
+        });
+        relativeLayout.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                gestureDetector.onTouchEvent(motionEvent);
+                return true;
+            }
+        });*/
         listenerOnClick();
         Reset();
+        toggleButton_connect.setOnToggleChanged(new ToggleButton.OnToggleChanged() {
+            @Override
+            public void onToggle(boolean on) {
+                if(on)
+                    bluetooth.enableBluetooth();
+                else{
+                    bluetooth.disableBluetooth();
+                    toolbar_connect.setSubtitle("Bluetooth turned off");
+                }
+            }
+        });
 
     }
 
     private void init() {
+        relativeLayout = (RelativeLayout) findViewById(R.id.relLayout);
         btn = new Button[5][5];
         btn[0][0] = (Button) findViewById(R.id.btn11);
         btn[0][1] = (Button) findViewById(R.id.btn12);
@@ -187,6 +220,59 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         }
     }*/
 
+    private class MyGesture extends GestureDetector.SimpleOnGestureListener {
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            if (e2.getX() - e1.getX() > MainActivity.SWIPE_THRESHOLD &&
+                    Math.abs(velocityX) > MainActivity.SWIPE_VELOCITY_THRESHOLD){
+                finish();
+            }
+            return super.onFling(e1, e2, velocityX, velocityY);
+        }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        gestureDetector.onTouchEvent(event);
+        /*int action = event.getActionMasked();
+        switch (action) {
+
+            case MotionEvent.ACTION_DOWN:
+                initialX = event.getX();
+                initialY = event.getY();
+                break;
+
+            case MotionEvent.ACTION_MOVE:
+                break;
+
+            case MotionEvent.ACTION_UP:
+                float finalX = event.getX();
+                float finalY = event.getY();
+
+                if (initialX < finalX) {
+                    finish();
+                }
+
+                if (initialX > finalX) {
+                }
+
+                if (initialY < finalY) {
+                }
+
+                if (initialY > finalY) {
+                }
+
+                break;
+
+            case MotionEvent.ACTION_CANCEL:
+                break;
+
+            case MotionEvent.ACTION_OUTSIDE:
+                break;
+        }*/
+        return super.onTouchEvent(event);
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -215,38 +301,16 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        /*switch (v.getId()){
+        switch (v.getId()){
             case R.id.btn_clear:
                 break;
             case R.id.btn_reconnect:
                 reconnect();
                 break;
-        }
-
-        switch (v.getId()) {
-            case R.id.btnStart:
-                effect = "Start";
-                Reset();
-                break;
-            case R.id.btnStop:
-                effect = "Stop";
-                for (int i = 0; i < 5; i++) {
-                    for (int j = 0; j < 5; j++) {
-                        btn[i][j].setEnabled(false);
-                    }
-                }
-                break;
             default:
-                break;
-        }*/
-        if (check) {
-            switch (v.getId()) {
-                case R.id.btn_clear:
-                    break;
-                case R.id.btn_reconnect:
-                    reconnect();
-                    break;
 
+
+            /*switch (v.getId()) {
                 case R.id.btnStart:
                     effect = "Start";
                     Reset();
@@ -259,322 +323,350 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                         }
                     }
                     break;
-                case R.id.btn11:
-                    btn[0][0].setText("X");
-                    btn[0][0].setEnabled(false);
-                    effect = "a0";
-                    break;
-                case R.id.btn12:
-                    btn[0][1].setText("X");
-                    btn[0][1].setEnabled(false);
-                    effect = "a1";
-                    break;
-                case R.id.btn13:
-                    btn[0][2].setText("X");
-                    btn[0][2].setEnabled(false);
-                    effect = "a2";
-                    break;
-                case R.id.btn14:
-                    btn[0][3].setText("X");
-                    btn[0][3].setEnabled(false);
-                    effect = "a3";
-                    break;
-                case R.id.btn15:
-                    btn[0][4].setText("X");
-                    btn[0][4].setEnabled(false);
-                    effect = "a4";
-                    break;
-                case R.id.btn21:
-                    btn[1][0].setText("X");
-                    btn[1][0].setEnabled(false);
-                    effect = "b0";
-                    break;
-                case R.id.btn22:
-                    btn[1][1].setText("X");
-                    btn[1][1].setEnabled(false);
-                    effect = "b1";
-                    break;
-                case R.id.btn23:
-                    btn[1][2].setText("X");
-                    btn[1][2].setEnabled(false);
-                    effect = "b2";
-                    break;
-                case R.id.btn24:
-                    btn[1][3].setText("X");
-                    btn[1][3].setEnabled(false);
-                    effect = "b3";
-                    break;
-                case R.id.btn25:
-                    btn[1][4].setText("X");
-                    btn[1][4].setEnabled(false);
-                    effect = "b4";
-                    break;
-                case R.id.btn31:
-                    btn[2][0].setText("X");
-                    btn[2][0].setEnabled(false);
-                    effect = "c0";
-                    break;
-                case R.id.btn32:
-                    btn[2][1].setText("X");
-                    btn[2][1].setEnabled(false);
-                    effect = "c1";
-                    break;
-                case R.id.btn33:
-                    btn[2][2].setText("X");
-                    btn[2][2].setEnabled(false);
-                    effect = "c2";
-                    break;
-                case R.id.btn34:
-                    btn[2][3].setText("X");
-                    btn[2][3].setEnabled(false);
-                    effect = "c3";
-                    break;
-                case R.id.btn35:
-                    btn[2][4].setText("X");
-                    btn[2][4].setEnabled(false);
-                    effect = "c4";
-                    break;
-                case R.id.btn41:
-                    btn[3][0].setText("X");
-                    btn[3][0].setEnabled(false);
-                    effect = "d0";
-                    break;
-                case R.id.btn42:
-                    btn[3][1].setText("X");
-                    btn[3][1].setEnabled(false);
-                    effect = "d1";
-                    break;
-                case R.id.btn43:
-                    btn[3][2].setText("X");
-                    btn[3][2].setEnabled(false);
-                    effect = "d2";
-                    break;
-                case R.id.btn44:
-                    btn[3][3].setText("X");
-                    btn[3][3].setEnabled(false);
-                    effect = "d3";
-                    break;
-                case R.id.btn45:
-                    btn[3][4].setText("X");
-                    btn[3][4].setEnabled(false);
-                    effect = "d4";
-                    break;
-                case R.id.btn51:
-                    btn[4][0].setText("X");
-                    btn[4][0].setEnabled(false);
-                    effect = "e0";
-                    break;
-                case R.id.btn52:
-                    btn[4][1].setText("X");
-                    btn[4][1].setEnabled(false);
-                    effect = "e1";
-                    break;
-                case R.id.btn53:
-                    btn[4][2].setText("X");
-                    btn[4][2].setEnabled(false);
-                    effect = "e2";
-                    break;
-                case R.id.btn54:
-                    btn[4][3].setText("X");
-                    btn[4][3].setEnabled(false);
-                    effect = "e3";
-                    break;
-                case R.id.btn55:
-                    btn[4][4].setText("X");
-                    btn[4][4].setEnabled(false);
-                    effect = "e4";
-                    break;
                 default:
                     break;
-            }
-            check = false;
-            if(checkColRow() || checkSlash()){
-                Toast toast = Toast.makeText(GameActivity.this, "X win", Toast.LENGTH_LONG);
-                toast.show();
-                effect = "xwin";
-                for (int i = 0; i < 5; i++) {
-                    for (int j = 0; j < 5; j++) {
-                        btn[i][j].setEnabled(false);
+            }*/
+            if (bluetooth.getState() == Bluetooth.STATE_CONNECTED) {
+                if (check) {
+                    switch (v.getId()) {
+                    /*case R.id.btn_clear:
+                        break;
+                    case R.id.btn_reconnect:
+                        reconnect();
+                        break;*/
+
+                        case R.id.btnStart:
+                            effect = "Start";
+                            Reset();
+                            break;
+                        case R.id.btnStop:
+                            effect = "Stop";
+                            for (int i = 0; i < 5; i++) {
+                                for (int j = 0; j < 5; j++) {
+                                    btn[i][j].setEnabled(false);
+                                }
+                            }
+                            break;
+                        case R.id.btn11:
+                            btn[0][0].setText("X");
+                            btn[0][0].setEnabled(false);
+                            effect = "a0";
+                            break;
+                        case R.id.btn12:
+                            btn[0][1].setText("X");
+                            btn[0][1].setEnabled(false);
+                            effect = "a1";
+                            break;
+                        case R.id.btn13:
+                            btn[0][2].setText("X");
+                            btn[0][2].setEnabled(false);
+                            effect = "a2";
+                            break;
+                        case R.id.btn14:
+                            btn[0][3].setText("X");
+                            btn[0][3].setEnabled(false);
+                            effect = "a3";
+                            break;
+                        case R.id.btn15:
+                            btn[0][4].setText("X");
+                            btn[0][4].setEnabled(false);
+                            effect = "a4";
+                            break;
+                        case R.id.btn21:
+                            btn[1][0].setText("X");
+                            btn[1][0].setEnabled(false);
+                            effect = "b0";
+                            break;
+                        case R.id.btn22:
+                            btn[1][1].setText("X");
+                            btn[1][1].setEnabled(false);
+                            effect = "b1";
+                            break;
+                        case R.id.btn23:
+                            btn[1][2].setText("X");
+                            btn[1][2].setEnabled(false);
+                            effect = "b2";
+                            break;
+                        case R.id.btn24:
+                            btn[1][3].setText("X");
+                            btn[1][3].setEnabled(false);
+                            effect = "b3";
+                            break;
+                        case R.id.btn25:
+                            btn[1][4].setText("X");
+                            btn[1][4].setEnabled(false);
+                            effect = "b4";
+                            break;
+                        case R.id.btn31:
+                            btn[2][0].setText("X");
+                            btn[2][0].setEnabled(false);
+                            effect = "c0";
+                            break;
+                        case R.id.btn32:
+                            btn[2][1].setText("X");
+                            btn[2][1].setEnabled(false);
+                            effect = "c1";
+                            break;
+                        case R.id.btn33:
+                            btn[2][2].setText("X");
+                            btn[2][2].setEnabled(false);
+                            effect = "c2";
+                            break;
+                        case R.id.btn34:
+                            btn[2][3].setText("X");
+                            btn[2][3].setEnabled(false);
+                            effect = "c3";
+                            break;
+                        case R.id.btn35:
+                            btn[2][4].setText("X");
+                            btn[2][4].setEnabled(false);
+                            effect = "c4";
+                            break;
+                        case R.id.btn41:
+                            btn[3][0].setText("X");
+                            btn[3][0].setEnabled(false);
+                            effect = "d0";
+                            break;
+                        case R.id.btn42:
+                            btn[3][1].setText("X");
+                            btn[3][1].setEnabled(false);
+                            effect = "d1";
+                            break;
+                        case R.id.btn43:
+                            btn[3][2].setText("X");
+                            btn[3][2].setEnabled(false);
+                            effect = "d2";
+                            break;
+                        case R.id.btn44:
+                            btn[3][3].setText("X");
+                            btn[3][3].setEnabled(false);
+                            effect = "d3";
+                            break;
+                        case R.id.btn45:
+                            btn[3][4].setText("X");
+                            btn[3][4].setEnabled(false);
+                            effect = "d4";
+                            break;
+                        case R.id.btn51:
+                            btn[4][0].setText("X");
+                            btn[4][0].setEnabled(false);
+                            effect = "e0";
+                            break;
+                        case R.id.btn52:
+                            btn[4][1].setText("X");
+                            btn[4][1].setEnabled(false);
+                            effect = "e1";
+                            break;
+                        case R.id.btn53:
+                            btn[4][2].setText("X");
+                            btn[4][2].setEnabled(false);
+                            effect = "e2";
+                            break;
+                        case R.id.btn54:
+                            btn[4][3].setText("X");
+                            btn[4][3].setEnabled(false);
+                            effect = "e3";
+                            break;
+                        case R.id.btn55:
+                            btn[4][4].setText("X");
+                            btn[4][4].setEnabled(false);
+                            effect = "e4";
+                            break;
+                        default:
+                            break;
                     }
-                }
-            }
-            if (aDraw()) {
-                Toast toast = Toast.makeText(GameActivity.this, "A DRAW", Toast.LENGTH_LONG);
-                toast.show();
-                effect = "adraw";
-            }
-
-            bluetooth.send(effect);
-        } else {
-            switch (v.getId()) {
-                case R.id.btn_clear:
-                    break;
-                case R.id.btn_reconnect:
-                    reconnect();
-                    break;
-
-                case R.id.btnStart:
-                    effect = "Start";
-                    Reset();
-                    break;
-                case R.id.btnStop:
-                    effect = "Stop";
-                    for (int i = 0; i < 5; i++) {
-                        for (int j = 0; j < 5; j++) {
-                            btn[i][j].setEnabled(false);
+                    check = false;
+                    if (checkColRow() || checkSlash()) {
+                        Toast toast = Toast.makeText(GameActivity.this, "X win", Toast.LENGTH_LONG);
+                        toast.show();
+                        effect = "xwin";
+                        for (int i = 0; i < 5; i++) {
+                            for (int j = 0; j < 5; j++) {
+                                btn[i][j].setEnabled(false);
+                            }
                         }
                     }
-                    break;
-
-                case R.id.btn11:
-                    btn[0][0].setText("O");
-                    btn[0][0].setEnabled(false);
-                    effect = "0a";
-                    break;
-                case R.id.btn12:
-                    btn[0][1].setText("O");
-                    btn[0][1].setEnabled(false);
-                    effect = "1a";
-                    break;
-                case R.id.btn13:
-                    btn[0][2].setText("O");
-                    btn[0][2].setEnabled(false);
-                    effect = "2a";
-                    break;
-                case R.id.btn14:
-                    btn[0][3].setText("O");
-                    btn[0][3].setEnabled(false);
-                    effect = "3a";
-                    break;
-                case R.id.btn15:
-                    btn[0][4].setText("O");
-                    btn[0][4].setEnabled(false);
-                    effect = "4a";
-                    break;
-                case R.id.btn21:
-                    btn[1][0].setText("O");
-                    btn[1][0].setEnabled(false);
-                    effect = "0b";
-                    break;
-                case R.id.btn22:
-                    btn[1][1].setText("O");
-                    btn[1][1].setEnabled(false);
-                    effect = "1b";
-                    break;
-                case R.id.btn23:
-                    btn[1][2].setText("O");
-                    btn[1][2].setEnabled(false);
-                    effect = "2b";
-                    break;
-                case R.id.btn24:
-                    btn[1][3].setText("O");
-                    btn[1][3].setEnabled(false);
-                    effect = "3b";
-                    break;
-                case R.id.btn25:
-                    btn[1][4].setText("O");
-                    btn[1][4].setEnabled(false);
-                    effect = "4b";
-                    break;
-                case R.id.btn31:
-                    btn[2][0].setText("O");
-                    btn[2][0].setEnabled(false);
-                    effect = "0c";
-                    break;
-                case R.id.btn32:
-                    btn[2][1].setText("O");
-                    btn[2][1].setEnabled(false);
-                    effect = "1c";
-                    break;
-                case R.id.btn33:
-                    btn[2][2].setText("O");
-                    btn[2][2].setEnabled(false);
-                    effect = "2c";
-                    break;
-                case R.id.btn34:
-                    btn[2][3].setText("O");
-                    btn[2][3].setEnabled(false);
-                    effect = "3c";
-                    break;
-                case R.id.btn35:
-                    btn[2][4].setText("O");
-                    btn[2][4].setEnabled(false);
-                    effect = "4c";
-                    break;
-                case R.id.btn41:
-                    btn[3][0].setText("O");
-                    btn[3][0].setEnabled(false);
-                    effect = "0d";
-                    break;
-                case R.id.btn42:
-                    btn[3][1].setText("O");
-                    btn[3][1].setEnabled(false);
-                    effect = "1d";
-                    break;
-                case R.id.btn43:
-                    btn[3][2].setText("O");
-                    btn[3][2].setEnabled(false);
-                    effect = "2d";
-                    break;
-                case R.id.btn44:
-                    btn[3][3].setText("O");
-                    btn[3][3].setEnabled(false);
-                    effect = "3d";
-                    break;
-                case R.id.btn45:
-                    btn[3][4].setText("O");
-                    btn[3][4].setEnabled(false);
-                    effect = "4d";
-                    break;
-                case R.id.btn51:
-                    btn[4][0].setText("O");
-                    btn[4][0].setEnabled(false);
-                    effect = "0e";
-                    break;
-                case R.id.btn52:
-                    btn[4][1].setText("O");
-                    btn[4][1].setEnabled(false);
-                    effect = "1e";
-                    break;
-                case R.id.btn53:
-                    btn[4][2].setText("O");
-                    btn[4][2].setEnabled(false);
-                    effect = "2e";
-                    break;
-                case R.id.btn54:
-                    btn[4][3].setText("O");
-                    btn[4][3].setEnabled(false);
-                    effect = "3e";
-                    break;
-                case R.id.btn55:
-                    btn[4][4].setText("O");
-                    btn[4][4].setEnabled(false);
-                    effect = "4e";
-                    break;
-                default:
-                    break;
-            }
-
-            check = true;
-            if(checkColRow() || checkSlash()){
-                Toast toast = Toast.makeText(GameActivity.this, "O win", Toast.LENGTH_LONG);
-                toast.show();
-                effect = "owin";
-                for (int i = 0; i < 5; i++) {
-                    for (int j = 0; j < 5; j++) {
-                        btn[i][j].setEnabled(false);
+                    if (aDraw()) {
+                        Toast toast = Toast.makeText(GameActivity.this, "A DRAW", Toast.LENGTH_LONG);
+                        toast.show();
+                        effect = "adraw";
                     }
-                }
-            }
 
-            if (aDraw()) {
-                Toast toast = Toast.makeText(GameActivity.this, "A DRAW", Toast.LENGTH_LONG);
-                toast.show();
-                effect = "adraw";
+                    bluetooth.send(effect);
+                } else {
+                    switch (v.getId()) {
+                        case R.id.btn_clear:
+                            break;
+                        case R.id.btn_reconnect:
+                            reconnect();
+                            break;
+
+                        case R.id.btnStart:
+                            effect = "Start";
+                            Reset();
+                            break;
+                        case R.id.btnStop:
+                            effect = "Stop";
+                            for (int i = 0; i < 5; i++) {
+                                for (int j = 0; j < 5; j++) {
+                                    btn[i][j].setEnabled(false);
+                                }
+                            }
+                            break;
+
+                        case R.id.btn11:
+                            btn[0][0].setText("O");
+                            btn[0][0].setEnabled(false);
+                            effect = "0a";
+                            break;
+                        case R.id.btn12:
+                            btn[0][1].setText("O");
+                            btn[0][1].setEnabled(false);
+                            effect = "1a";
+                            break;
+                        case R.id.btn13:
+                            btn[0][2].setText("O");
+                            btn[0][2].setEnabled(false);
+                            effect = "2a";
+                            break;
+                        case R.id.btn14:
+                            btn[0][3].setText("O");
+                            btn[0][3].setEnabled(false);
+                            effect = "3a";
+                            break;
+                        case R.id.btn15:
+                            btn[0][4].setText("O");
+                            btn[0][4].setEnabled(false);
+                            effect = "4a";
+                            break;
+                        case R.id.btn21:
+                            btn[1][0].setText("O");
+                            btn[1][0].setEnabled(false);
+                            effect = "0b";
+                            break;
+                        case R.id.btn22:
+                            btn[1][1].setText("O");
+                            btn[1][1].setEnabled(false);
+                            effect = "1b";
+                            break;
+                        case R.id.btn23:
+                            btn[1][2].setText("O");
+                            btn[1][2].setEnabled(false);
+                            effect = "2b";
+                            break;
+                        case R.id.btn24:
+                            btn[1][3].setText("O");
+                            btn[1][3].setEnabled(false);
+                            effect = "3b";
+                            break;
+                        case R.id.btn25:
+                            btn[1][4].setText("O");
+                            btn[1][4].setEnabled(false);
+                            effect = "4b";
+                            break;
+                        case R.id.btn31:
+                            btn[2][0].setText("O");
+                            btn[2][0].setEnabled(false);
+                            effect = "0c";
+                            break;
+                        case R.id.btn32:
+                            btn[2][1].setText("O");
+                            btn[2][1].setEnabled(false);
+                            effect = "1c";
+                            break;
+                        case R.id.btn33:
+                            btn[2][2].setText("O");
+                            btn[2][2].setEnabled(false);
+                            effect = "2c";
+                            break;
+                        case R.id.btn34:
+                            btn[2][3].setText("O");
+                            btn[2][3].setEnabled(false);
+                            effect = "3c";
+                            break;
+                        case R.id.btn35:
+                            btn[2][4].setText("O");
+                            btn[2][4].setEnabled(false);
+                            effect = "4c";
+                            break;
+                        case R.id.btn41:
+                            btn[3][0].setText("O");
+                            btn[3][0].setEnabled(false);
+                            effect = "0d";
+                            break;
+                        case R.id.btn42:
+                            btn[3][1].setText("O");
+                            btn[3][1].setEnabled(false);
+                            effect = "1d";
+                            break;
+                        case R.id.btn43:
+                            btn[3][2].setText("O");
+                            btn[3][2].setEnabled(false);
+                            effect = "2d";
+                            break;
+                        case R.id.btn44:
+                            btn[3][3].setText("O");
+                            btn[3][3].setEnabled(false);
+                            effect = "3d";
+                            break;
+                        case R.id.btn45:
+                            btn[3][4].setText("O");
+                            btn[3][4].setEnabled(false);
+                            effect = "4d";
+                            break;
+                        case R.id.btn51:
+                            btn[4][0].setText("O");
+                            btn[4][0].setEnabled(false);
+                            effect = "0e";
+                            break;
+                        case R.id.btn52:
+                            btn[4][1].setText("O");
+                            btn[4][1].setEnabled(false);
+                            effect = "1e";
+                            break;
+                        case R.id.btn53:
+                            btn[4][2].setText("O");
+                            btn[4][2].setEnabled(false);
+                            effect = "2e";
+                            break;
+                        case R.id.btn54:
+                            btn[4][3].setText("O");
+                            btn[4][3].setEnabled(false);
+                            effect = "3e";
+                            break;
+                        case R.id.btn55:
+                            btn[4][4].setText("O");
+                            btn[4][4].setEnabled(false);
+                            effect = "4e";
+                            break;
+                        default:
+                            break;
+                    }
+
+                    check = true;
+                    if (checkColRow() || checkSlash()) {
+                        Toast toast = Toast.makeText(GameActivity.this, "O win", Toast.LENGTH_LONG);
+                        toast.show();
+                        effect = "owin";
+                        for (int i = 0; i < 5; i++) {
+                            for (int j = 0; j < 5; j++) {
+                                btn[i][j].setEnabled(false);
+                            }
+                        }
+                    }
+
+                    if (aDraw()) {
+                        Toast toast = Toast.makeText(GameActivity.this, "A DRAW", Toast.LENGTH_LONG);
+                        toast.show();
+                        effect = "adraw";
+                    }
+                    bluetooth.send(effect);
+                }
+            } else {
+                Toast.makeText(this, "Connect error. Please Reconnect !", Toast.LENGTH_LONG).show();
             }
-            bluetooth.send(effect);
+            break;
         }
-
     }
 
     private boolean aDraw(){
@@ -732,6 +824,9 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
     }
+
+
+
     private static class myHandler extends Handler {
         private final WeakReference<GameActivity> mActivity;
         public myHandler(GameActivity activity) {

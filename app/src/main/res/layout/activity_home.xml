@@ -14,7 +14,8 @@
         android:layout_below="@+id/txtView"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="45dp"
-        android:background="#3fffffff"
+        android:background="@drawable/background_transparent"
+        android:textColor="#3fffff"
         android:text="Option 1: Select" />
 
     <Button
@@ -24,8 +25,9 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/btn_Selection1"
-        android:background="#3fffffff"
-        android:text="Option 2: Caro" />
+        android:background="@drawable/background_transparent"
+        android:textColor="#3fffff"
+        android:text="Option 2: Tick" />
 
     <Button
         android:id="@+id/btn_Selection3"
@@ -34,8 +36,31 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/btn_Selection2"
-        android:background="#3fffffff"
-        android:text="Option 3: Music" />
+        android:background="@drawable/background_transparent"
+        android:textColor="#3fffff"
+        android:text="Option 3: Caro" />
+
+    <Button
+        android:id="@+id/btn_Selection4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/btn_Selection3"
+        android:background="@drawable/background_transparent"
+        android:textColor="#3fffff"
+        android:text="Option 4: Music" />
+
+    <Button
+        android:id="@+id/btn_Selection5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/btn_Selection4"
+        android:background="@drawable/background_transparent"
+        android:text="Option 5: Editor Music"
+        android:textColor="#3fffff" />
 
     <TextView
         android:id="@+id/txtView"
@@ -45,6 +70,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="34dp"
         android:text="CHOOSE THE OPTION"
+        android:textColor="#3fffff"
         android:textAlignment="center"
         android:textSize="30sp" />
 </RelativeLayout>

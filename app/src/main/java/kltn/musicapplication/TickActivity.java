@@ -16,85 +16,82 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.SparseBooleanArray;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckedTextView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 
-import kltn.musicapplication.adapters.AdapterEffect;
 import kltn.musicapplication.models.Bluetooth;
 import kltn.musicapplication.models.Effect;
+import kltn.musicapplication.models.TickEffect;
 import kltn.musicapplication.utils.BlurBuilder;
 import kltn.musicapplication.views.ProgressBarIndeterminateDeterminate;
 import kltn.musicapplication.views.ToggleButton;
 
 /**
- * Created by UITCV on 15/09/2017.
+ * Created by UITCV on 11/29/2017.
  */
 
-public class ConnectActivity extends AppCompatActivity implements View.OnClickListener{
+public class TickActivity extends AppCompatActivity implements View.OnClickListener{
 
+    private ListView listView;
+    private Button btn_send;
+    private int total = 10;
     private BluetoothDevice bluetoothDevice;
     private Snackbar snackbar_TurnOn;
     private Bluetooth bluetooth;
     private Handler handler;
     private Toolbar toolbar_connect;
-    private RecyclerView recyclerView_effect;
-    private FloatingActionButton floatingActionButton_add;
-    private ArrayList<Effect> effects;
-    private AdapterEffect adapter_effects;
+    private TickEffect[] tickEffects;
+    private ArrayAdapter<TickEffect> arrayAdapter;
     private ProgressBarIndeterminateDeterminate progressBar_connect;
     private LinearLayout coordinatorLayout_connect;
     private Button button_reconnect;
     private Button button_clear;
     private ToggleButton toggleButton_connect;
+    private LinearLayout linearLayout;
 
     private GestureDetector gestureDetector;
-    private float initialX, initialY;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_connect);
+        setContentView(R.layout.activity_tick);
 
         WallpaperManager wallpaperManager = WallpaperManager.getInstance(this);
         Drawable wallpaperDrawable = wallpaperManager.getDrawable();
         Bitmap bm = ((BitmapDrawable) wallpaperDrawable).getBitmap();
         final Bitmap blur_bitmap = BlurBuilder.blur(this, bm);
         this.getWindow().setBackgroundDrawable(new BitmapDrawable(getResources(), blur_bitmap));
-//        BlurBehind.getInstance()
-//                .withAlpha(90)
-//                .withFilterColor(Color.parseColor("#FFFFFF"))
-//                .setBackground(this);
+
+        listView = (ListView) findViewById(R.id.list_view_effect);
+        btn_send = (Button) findViewById(R.id.btn_send_data);
+
+
         overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
 
-        recyclerView_effect = (RecyclerView) findViewById(R.id.recv_effect);
         toolbar_connect = (Toolbar) findViewById(R.id.toolbar_connect);
         progressBar_connect = (ProgressBarIndeterminateDeterminate) findViewById(R.id.prog_toolbar_connect);
         coordinatorLayout_connect = (LinearLayout) findViewById(R.id.coordinator_layout_connect);
         button_clear = (Button) findViewById(R.id.btn_clear);
         button_reconnect = (Button) findViewById(R.id.btn_reconnect);
         toggleButton_connect = (ToggleButton) findViewById(R.id.tog_connect);
+        linearLayout = (LinearLayout) findViewById(R.id.linear_layout);
 
-        gestureDetector = new GestureDetector(this, new MyGesture());
-        /*coordinatorLayout_connect.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                gestureDetector.onTouchEvent(motionEvent);
-                return true;
-            }
-        });*/
+        gestureDetector = new GestureDetector(this, new TickActivity.MyGesture());
 
         setSupportActionBar(toolbar_connect);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
@@ -109,7 +106,7 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
                         bluetooth.enableBluetooth();
                     }
                 });
-        handler = new myHandler(ConnectActivity.this);
+        handler = new TickActivity.myHandler(TickActivity.this);
         bluetooth = new Bluetooth(this, handler);
         bluetoothDevice = getIntent().getExtras().getParcelable(MainActivity.EXTRA_DEVICE);
         setTitle(bluetoothDevice.getName());
@@ -120,22 +117,31 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
         else
             toggleButton_connect.setToggleOff();
 
-        effects = new ArrayList<>();
-        recyclerView_effect.setLayoutManager(new GridLayoutManager(getApplicationContext(), 1));
-        effects.add(new Effect("Effect 1", "0", "Describe effect 1", R.drawable.logo));
-        effects.add(new Effect("Effect 2", "1", "Describe effect 2", R.drawable.logo));
-        effects.add(new Effect("Effect 3", "2", "Describe effect 3", R.drawable.logo));
-        effects.add(new Effect("Effect 4", "3", "Describe effect 4", R.drawable.logo));
-        effects.add(new Effect("Effect 5", "4", "Describe effect 5", R.drawable.logo));
-        effects.add(new Effect("Effect 6", "5", "Describe effect 6", R.drawable.logo));
-        effects.add(new Effect("Effect 7", "6", "Describe effect 7", R.drawable.logo));
-        effects.add(new Effect("Effect 8", "7", "Describe effect 8", R.drawable.logo));
-        effects.add(new Effect("Effect 9", "8", "Describe effect 9", R.drawable.logo));
-        effects.add(new Effect("Effect 10", "9", "Describe effect 10", R.drawable.logo));
+        listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 
-        adapter_effects = new AdapterEffect(effects, ConnectActivity.this,
-                bluetooth, bluetoothDevice, recyclerView_effect);
-        recyclerView_effect.setAdapter(adapter_effects);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                CheckedTextView v = (CheckedTextView) view;
+                boolean currentCheck = v.isChecked();
+                TickEffect user = (TickEffect) listView.getItemAtPosition(position);
+                user.setActive(!currentCheck);
+            }
+        });
+
+        TickEffect[] effects = new TickEffect[total];
+        for (int i = 0; i < total; i++){
+            effects[i] = new TickEffect(new Effect("Effect " + (i + 1), "" + i, "Describe effect " + (i + 1), R.drawable.logo));
+        }
+        tickEffects = effects;
+
+        arrayAdapter = new ArrayAdapter<TickEffect>(this, android.R.layout.simple_list_item_checked, tickEffects);
+        listView.setAdapter(arrayAdapter);
+        for(int i = 0; i < tickEffects.length; i++ )  {
+            listView.setItemChecked(i,tickEffects[i].isActive());
+        }
+
+        //////////
 
         toggleButton_connect.setOnToggleChanged(new ToggleButton.OnToggleChanged() {
             @Override
@@ -148,6 +154,27 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
                 }
             }
         });
+
+    }
+
+    public void btnsend(View view) {
+        SparseBooleanArray sp = listView.getCheckedItemPositions();
+
+        String sb = new String();
+
+        for(int i=0;i<sp.size();i++){
+            if(sp.valueAt(i)==true){
+                TickEffect effects = (TickEffect) listView.getItemAtPosition(i);
+                String s = effects.getEffect().getCode();
+                sb = sb + s;
+            }
+        }
+
+        if (bluetooth.getState() == bluetooth.STATE_CONNECTED){
+            bluetooth.send(sb);
+        } else {
+            Toast.makeText(this, "Connect error. Please Reconnect !", Toast.LENGTH_LONG).show();
+        }
     }
 
     private class MyGesture extends GestureDetector.SimpleOnGestureListener {
@@ -284,13 +311,13 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private static class myHandler extends Handler {
-        private final WeakReference<ConnectActivity> mActivity;
-        public myHandler(ConnectActivity activity) {
+        private final WeakReference<TickActivity> mActivity;
+        public myHandler(TickActivity activity) {
             mActivity = new WeakReference<>(activity);
         }
         @Override
         public void handleMessage(Message msg) {
-            final ConnectActivity activity = mActivity.get();
+            final TickActivity activity = mActivity.get();
             switch (msg.what) {
                 case Bluetooth.MESSAGE_STATE_CHANGE:
                     switch (msg.arg1) {
@@ -328,4 +355,5 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
 
 
     }
+
 }

@@ -25,6 +25,8 @@ public class HomeActivity extends AppCompatActivity {
     private Button btn_Selection1;
     private Button btn_Selection2;
     private Button btn_Selection3;
+    private Button btn_Selection4;
+    private Button btn_Selection5;
     private BluetoothDevice bluetoothDevice;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -42,6 +44,9 @@ public class HomeActivity extends AppCompatActivity {
         btn_Selection1 = (Button) findViewById(R.id.btn_Selection1);
         btn_Selection2 = (Button) findViewById(R.id.btn_Selection2);
         btn_Selection3 = (Button) findViewById(R.id.btn_Selection3);
+        btn_Selection4 = (Button) findViewById(R.id.btn_Selection4);
+        btn_Selection5 = (Button) findViewById(R.id.btn_Selection5);
+
 
         bluetoothDevice = getIntent().getExtras().getParcelable(MainActivity.EXTRA_DEVICE);
         btn_Selection1.setOnClickListener(new View.OnClickListener() {
@@ -56,7 +61,7 @@ public class HomeActivity extends AppCompatActivity {
         btn_Selection2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(HomeActivity.this, GameActivity.class);
+                Intent intent = new Intent(HomeActivity.this, TickActivity.class);
                 intent.putExtra(MainActivity.EXTRA_DEVICE, bluetoothDevice);
                 startActivity(intent);
             }
@@ -65,7 +70,25 @@ public class HomeActivity extends AppCompatActivity {
         btn_Selection3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Intent intent = new Intent(HomeActivity.this, GameActivity.class);
+                intent.putExtra(MainActivity.EXTRA_DEVICE, bluetoothDevice);
+                startActivity(intent);
+            }
+        });
+
+        btn_Selection4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
                 Intent intent = new Intent(HomeActivity.this, MusicActivity.class);
+                intent.putExtra(MainActivity.EXTRA_DEVICE, bluetoothDevice);
+                startActivity(intent);
+            }
+        });
+
+        btn_Selection5.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(HomeActivity.this, SelecMusicActivity.class);
                 intent.putExtra(MainActivity.EXTRA_DEVICE, bluetoothDevice);
                 startActivity(intent);
             }
