@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
                             @Override public void onClick(DialogInterface dialog, int which) {
                                 progressBar_toolbar.setVisibility(View.INVISIBLE);
                                 bluetooth.getBluetoothAdapter().cancelDiscovery();
-                                Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+                                Intent intent = new Intent(MainActivity.this, StartActivity.class);
                                 intent.putExtra(EXTRA_DEVICE, device);
                                 startActivity(intent);
                             }
@@ -255,7 +255,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
-
 
 }
 

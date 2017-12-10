@@ -16,6 +16,7 @@
 
 package kltn.musicapplication.views;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -36,6 +37,7 @@ import android.widget.ImageView;
  *
  * Modified by Anna Stępień <anna.stepien@semantive.com>
  */
+@SuppressLint("AppCompatCustomView")
 public class MarkerView extends ImageView {
 
     public interface MarkerListener {

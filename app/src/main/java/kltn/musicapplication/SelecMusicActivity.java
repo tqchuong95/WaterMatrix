@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -68,10 +67,8 @@ public class SelecMusicActivity extends AppCompatActivity implements AdapterView
         paths = new ArrayList<>();
         playsong = new ArrayList<>();
         getMusicPlayer();
-        arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, playsong);
+        arrayAdapter = new ArrayAdapter<>(this, R.layout.list_item_song, playsong);
         listView.setAdapter(arrayAdapter);
-        listView.setBackgroundColor(Color.WHITE);
-
     }
 
     private void checkAndRequestPermissions() {
@@ -114,7 +111,7 @@ public class SelecMusicActivity extends AppCompatActivity implements AdapterView
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         this.position = position;
         pathname = paths.get(position);
-        Intent intent = new Intent(SelecMusicActivity.this, MSEditorActivity.class);
+        Intent intent = new Intent(SelecMusicActivity.this, WaveformActivity.class);
         intent.putExtra(MainActivity.EXTRA_DEVICE, bluetoothDevice);
         startActivity(intent);
     }
