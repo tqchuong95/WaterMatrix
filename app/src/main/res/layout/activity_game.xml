@@ -260,7 +260,10 @@
             android:layout_alignParentBottom="true"
             android:layout_alignStart="@+id/gridLayout"
             android:layout_marginBottom="40dp"
-            android:text="START" />
+            android:background="#3fffff"
+            android:textColor="@color/white"
+            android:text="START"
+            android:textSize="18sp"/>
 
         <Button
             android:id="@+id/btnStop"
@@ -269,7 +272,10 @@
             android:layout_alignEnd="@+id/gridLayout"
             android:layout_alignRight="@+id/gridLayout"
             android:layout_alignTop="@+id/btnStart"
-            android:text="STOP" />
+            android:background="#3fffff"
+            android:textColor="@color/white"
+            android:text="STOP"
+            android:textSize="18sp"/>
     </RelativeLayout>
 
 </LinearLayout>

@@ -135,7 +135,7 @@ public class TickActivity extends AppCompatActivity implements View.OnClickListe
         }
         tickEffects = effects;
 
-        arrayAdapter = new ArrayAdapter<TickEffect>(this, android.R.layout.simple_list_item_checked, tickEffects);
+        arrayAdapter = new ArrayAdapter<TickEffect>(this, R.layout.list_effect, tickEffects);
         listView.setAdapter(arrayAdapter);
         for(int i = 0; i < tickEffects.length; i++ )  {
             listView.setItemChecked(i,tickEffects[i].isActive());

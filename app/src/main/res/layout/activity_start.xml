@@ -37,7 +37,7 @@
         android:layout_marginLeft="20dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="40dp"
-        android:text="Performer: "
+        android:text="Executor: "
         android:textColor="#3fffff"
         android:textSize="24sp" />
 
@@ -66,13 +66,13 @@
         android:textSize="30sp" />
 
     <TextView
+        android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:text="2017"
+        android:text="2018"
         android:textColor="#3fffff"
-        android:textSize="24sp"
-        android:id="@+id/textView2" />
+        android:textSize="24sp" />
 
 </RelativeLayout>

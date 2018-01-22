@@ -162,7 +162,7 @@ public class WaveformActivity extends AppCompatActivity implements View.OnClickL
         rdbtn = new RadioButton[total];
         rd = new int[total];
         rd[0] = R.id.rd_1; rd[1] = R.id.rd_2; rd[2] = R.id.rd_3; rd[3] = R.id.rd_4; rd[4] = R.id.rd_5;
-        rd[5] = R.id.rd_6; rd[6] = R.id.rd_7; rd[7] = R.id.rd_8; rd[8] = R.id.rd_9;
+        rd[5] = R.id.rd_6; rd[6] = R.id.rd_7; rd[7] = R.id.rd_8; rd[8] = R.id.rd_9; //rd[9] = R.id.rd_10;
         for (int i = 0; i < total; i++){
             rdbtn[i] = (RadioButton) findViewById(rd[i]);
         }
@@ -206,8 +206,8 @@ public class WaveformActivity extends AppCompatActivity implements View.OnClickL
         else
             toggleButton_connect.setToggleOff();
 
-        PowerManager pm = (PowerManager)getSystemService(Context.POWER_SERVICE);
-        wl = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK | PowerManager.ON_AFTER_RELEASE, "My Tag");
+        //PowerManager pm = (PowerManager)getSystemService(Context.POWER_SERVICE);
+        //wl = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK | PowerManager.ON_AFTER_RELEASE, "My Tag");
 
         loadGui();
         //mFilename = SelecMusicActivity.pathname;
@@ -370,6 +370,9 @@ public class WaveformActivity extends AppCompatActivity implements View.OnClickL
             case R.id.rd_9:
                 nexttotal = 8;
                 break;
+            case R.id.rd_10:
+                nexttotal = 8;
+                break;
             default:
                 nexttotal = -1;
                 break;
@@ -377,24 +380,39 @@ public class WaveformActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void outEffect(){
-        int frame = mWaveformView.millisecsToPixels(mPlayer.getCurrentPosition() + mPlayStartOffset);
-        if (mSetTimeStart.size() > pos) {
-            if (frame >= (mSetTimeStart.get(pos))) {
-                try {
-                    if (bluetooth.getState() == Bluetooth.STATE_CONNECTED) {
-                        bluetooth.send(mEffects.get(pos).getCode());
-                    } else {
-                        reconnect();
-                        Toast.makeText(this, "Connected error. Please reconnect...!", Toast.LENGTH_LONG).show();
-                    }
-
-                } catch (NullPointerException e) {
-                    //Nothing
-                    Toast.makeText(this, "Try again!", Toast.LENGTH_LONG).show();
+        String data = "";
+        while (mSetTimeStart.size() > pos) {
+            data = data + mEffects.get(pos).getCode() + " " +
+                    formatDecimal(mWaveformView.pixelsToSeconds(mSetTimeEnd.get(pos) - mSetTimeStart.get(pos))) + ";";
+            /*try {
+                if (bluetooth.getState() == Bluetooth.STATE_CONNECTED) {
+                    bluetooth.send(data);
+                    data = "";
+                } else {
+                    reconnect();
+                    Toast.makeText(this, "Connected error. Please reconnect...!", Toast.LENGTH_LONG).show();
                 }
-                pos++;
-            }
+
+            } catch (NullPointerException e) {
+                //Nothing
+                Toast.makeText(this, "Try again!", Toast.LENGTH_LONG).show();
+            }*/
+            pos++;
         }
+        try {
+            if (bluetooth.getState() == Bluetooth.STATE_CONNECTED) {
+                bluetooth.send(data);
+                //data = "";
+            } else {
+                reconnect();
+                Toast.makeText(this, "Connected error. Please reconnect...!", Toast.LENGTH_LONG).show();
+            }
+
+        } catch (NullPointerException e) {
+            //Nothing
+            Toast.makeText(this, "Try again!", Toast.LENGTH_LONG).show();
+        }
+
     }
 
     @Override
@@ -405,13 +423,13 @@ public class WaveformActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onResume() {
         super.onResume();
-        wl.acquire();
+        //wl.acquire();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        wl.release();
+        //wl.release();
     }
 
     @Override
@@ -1071,6 +1089,7 @@ public class WaveformActivity extends AppCompatActivity implements View.OnClickL
     protected View.OnClickListener mPlayListener = new View.OnClickListener() {
         public void onClick(View sender) {
             if (checkID){
+                outEffect();
                 playMusic(mStartPos);
             } else {
                 onPlay(mStartPos);
@@ -1231,34 +1250,6 @@ public class WaveformActivity extends AppCompatActivity implements View.OnClickL
     private synchronized void playMusic(int startPosition) {
         onPlay(startPosition);
         //Send code bluetooth
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (mIsPlaying) {
-                    Message message = new Message();
-                    message.what = UPDATE_TIME;
-                    mshandler.sendMessage(message);
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-
-                    }
-
-                }
-            }
-        }).start();
     }
-
-    private Handler mshandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            if (msg.what == UPDATE_TIME) {
-                try {
-                    outEffect();
-                } catch (NullPointerException e){}
-            }
-        }
-    };
 }
 
