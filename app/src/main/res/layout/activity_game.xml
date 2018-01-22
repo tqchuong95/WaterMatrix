@@ -260,7 +260,7 @@
             android:layout_alignParentBottom="true"
             android:layout_alignStart="@+id/gridLayout"
             android:layout_marginBottom="40dp"
-            android:background="#3fffff"
+            android:background="#3fffffff"
             android:textColor="@color/white"
             android:text="START"
             android:textSize="18sp"/>
@@ -272,7 +272,7 @@
             android:layout_alignEnd="@+id/gridLayout"
             android:layout_alignRight="@+id/gridLayout"
             android:layout_alignTop="@+id/btnStart"
-            android:background="#3fffff"
+            android:background="#3fffffff"
             android:textColor="@color/white"
             android:text="STOP"
             android:textSize="18sp"/>

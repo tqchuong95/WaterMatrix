@@ -14,7 +14,7 @@
         android:layout_below="@+id/txtView"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="45dp"
-        android:background="#3fffff"
+        android:background="#3fffffff"
         android:text="Option 1: Select"
         android:textColor="@color/white"
         android:textSize="18sp" />
@@ -26,7 +26,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/btn_Selection1"
-        android:background="#3fffff"
+        android:background="#3fffffff"
         android:text="Option 2: Tick"
         android:textColor="@color/white"
         android:textSize="18sp" />
@@ -38,7 +38,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/btn_Selection2"
-        android:background="#3fffff"
+        android:background="#3fffffff"
         android:text="Option 3: Caro"
         android:textColor="@color/white"
         android:textSize="18sp" />
@@ -50,7 +50,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/btn_Selection3"
-        android:background="#3fffff"
+        android:background="#3fffffff"
         android:text="Option 4: Music"
         android:textColor="@color/white"
         android:textSize="18sp" />
@@ -62,7 +62,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/btn_Selection4"
-        android:background="#3fffff"
+        android:background="#3fffffff"
         android:text="Option 5: Editor Music"
         android:textColor="@color/white"
         android:textSize="18sp" />
