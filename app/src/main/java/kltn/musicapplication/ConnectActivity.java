@@ -1,10 +1,12 @@
 package kltn.musicapplication;
 
+import android.app.AlertDialog;
 import android.app.WallpaperManager;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
@@ -61,6 +63,8 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
 
     private GestureDetector gestureDetector;
     private float initialX, initialY;
+    protected int count = 0;
+    protected boolean check = true;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
@@ -87,14 +91,13 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
         button_reconnect = (Button) findViewById(R.id.btn_reconnect);
         toggleButton_connect = (ToggleButton) findViewById(R.id.tog_connect);
 
-        gestureDetector = new GestureDetector(this, new MyGesture());
-        /*coordinatorLayout_connect.setOnTouchListener(new View.OnTouchListener() {
+        coordinatorLayout_connect.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 gestureDetector.onTouchEvent(motionEvent);
                 return true;
             }
-        });*/
+        });
 
         setSupportActionBar(toolbar_connect);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
@@ -150,57 +153,10 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
         });
     }
 
-    private class MyGesture extends GestureDetector.SimpleOnGestureListener {
-        @Override
-        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-            if (e2.getX() - e1.getX() > MainActivity.SWIPE_THRESHOLD &&
-                    Math.abs(velocityX) > MainActivity.SWIPE_VELOCITY_THRESHOLD){
-                finish();
-            }
-            return super.onFling(e1, e2, velocityX, velocityY);
-        }
-    }
-
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        gestureDetector.onTouchEvent(event);
-        /*int action = event.getActionMasked();
-        switch (action) {
-
-            case MotionEvent.ACTION_DOWN:
-                initialX = event.getX();
-                initialY = event.getY();
-                break;
-
-            case MotionEvent.ACTION_MOVE:
-                break;
-
-            case MotionEvent.ACTION_UP:
-                float finalX = event.getX();
-                float finalY = event.getY();
-
-                if (initialX < finalX) {
-                    finish();
-                }
-
-                if (initialX > finalX) {
-                }
-
-                if (initialY < finalY) {
-                }
-
-                if (initialY > finalY) {
-                }
-
-                break;
-
-            case MotionEvent.ACTION_CANCEL:
-                break;
-
-            case MotionEvent.ACTION_OUTSIDE:
-                break;
-        }*/
-        return super.onTouchEvent(event);
+        BacktoPre();
+        return false;
     }
 
     @Override
@@ -221,6 +177,38 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
         super.onStop();
         bluetooth.disconnect();
         unregisterReceiver(mReceiver);
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        reconnect();
+    }
+
+    @Override
+    public void onBackPressed() {
+        BacktoPre();
+    }
+
+    private void BacktoPre(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Question");
+        builder.setMessage("Do you want to back?");
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Intent intent = new Intent(ConnectActivity.this, HomeActivity.class);
+                intent.putExtra(MainActivity.EXTRA_DEVICE, bluetoothDevice);
+                startActivityForResult(intent, bluetooth.REQUEST_ENABLE_BLT);
+            }
+        });
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.cancel();
+            }
+        });
+        builder.create().show();
     }
 
     public void reconnect(){
@@ -282,7 +270,6 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
             }
         }
     }
-
     private static class myHandler extends Handler {
         private final WeakReference<ConnectActivity> mActivity;
         public myHandler(ConnectActivity activity) {
@@ -291,6 +278,10 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
         @Override
         public void handleMessage(Message msg) {
             final ConnectActivity activity = mActivity.get();
+            if (activity.bluetooth.getState() == Bluetooth.STATE_CONNECTED && activity.check == true){
+                activity.bluetooth.send("op1");
+                activity.check = false;
+            }
             switch (msg.what) {
                 case Bluetooth.MESSAGE_STATE_CHANGE:
                     switch (msg.arg1) {
@@ -324,6 +315,7 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
 
                     break;
             }
+
         }
 
 

@@ -1,10 +1,12 @@
 package kltn.musicapplication;
 
+import android.app.AlertDialog;
 import android.app.WallpaperManager;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
@@ -61,9 +63,7 @@ public class TickActivity extends AppCompatActivity implements View.OnClickListe
     private Button button_reconnect;
     private Button button_clear;
     private ToggleButton toggleButton_connect;
-    private LinearLayout linearLayout;
-
-    private GestureDetector gestureDetector;
+    protected boolean check = true;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
@@ -89,9 +89,6 @@ public class TickActivity extends AppCompatActivity implements View.OnClickListe
         button_clear = (Button) findViewById(R.id.btn_clear);
         button_reconnect = (Button) findViewById(R.id.btn_reconnect);
         toggleButton_connect = (ToggleButton) findViewById(R.id.tog_connect);
-        linearLayout = (LinearLayout) findViewById(R.id.linear_layout);
-
-        gestureDetector = new GestureDetector(this, new TickActivity.MyGesture());
 
         setSupportActionBar(toolbar_connect);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
@@ -177,6 +174,30 @@ public class TickActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        BacktoPre();
+    }
+
+    private void BacktoPre(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Question");
+        builder.setMessage("Do you want to back?");
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                finish();
+            }
+        });
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.cancel();
+            }
+        });
+        builder.create().show();
+    }
+
     private class MyGesture extends GestureDetector.SimpleOnGestureListener {
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
@@ -190,44 +211,8 @@ public class TickActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        gestureDetector.onTouchEvent(event);
-        /*int action = event.getActionMasked();
-        switch (action) {
-
-            case MotionEvent.ACTION_DOWN:
-                initialX = event.getX();
-                initialY = event.getY();
-                break;
-
-            case MotionEvent.ACTION_MOVE:
-                break;
-
-            case MotionEvent.ACTION_UP:
-                float finalX = event.getX();
-                float finalY = event.getY();
-
-                if (initialX < finalX) {
-                    finish();
-                }
-
-                if (initialX > finalX) {
-                }
-
-                if (initialY < finalY) {
-                }
-
-                if (initialY > finalY) {
-                }
-
-                break;
-
-            case MotionEvent.ACTION_CANCEL:
-                break;
-
-            case MotionEvent.ACTION_OUTSIDE:
-                break;
-        }*/
-        return super.onTouchEvent(event);
+        BacktoPre();
+        return false;
     }
 
     @Override
@@ -248,6 +233,12 @@ public class TickActivity extends AppCompatActivity implements View.OnClickListe
         super.onStop();
         bluetooth.disconnect();
         unregisterReceiver(mReceiver);
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        reconnect();
     }
 
     public void reconnect(){
@@ -318,6 +309,10 @@ public class TickActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         public void handleMessage(Message msg) {
             final TickActivity activity = mActivity.get();
+            if (activity.bluetooth.getState() == Bluetooth.STATE_CONNECTED && activity.check == true){
+                activity.bluetooth.send("op2");
+                activity.check = false;
+            }
             switch (msg.what) {
                 case Bluetooth.MESSAGE_STATE_CHANGE:
                     switch (msg.arg1) {

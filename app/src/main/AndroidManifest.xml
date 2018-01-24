@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="kltn.musicapplication" >
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    package="kltn.musicapplication">
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -15,21 +16,38 @@
         android:roundIcon="@mipmap/ic_logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity" >
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".StartActivity"></activity>
-        <activity android:name=".ConnectActivity"></activity>
-        <activity android:name=".HomeActivity"></activity>
-        <activity android:name=".MusicActivity"></activity>
-        <activity android:name=".GameActivity"></activity>
-        <activity android:name=".TickActivity"></activity>
-        <activity android:name=".SelecMusicActivity"></activity>
-        <activity android:name=".WaveformActivity"></activity>
+        <activity
+            android:name=".StartActivity"
+            android:noHistory="true" />
+        <activity
+            android:name=".ConnectActivity"
+            android:noHistory="true" />
+        <activity android:name=".HomeActivity" />
+        <activity
+            android:name=".MusicActivity"
+            android:noHistory="true" />
+        <activity
+            android:name=".GameActivity"
+            android:noHistory="true" />
+        <activity
+            android:name=".TickActivity"
+            android:noHistory="true" />
+        <activity android:name=".SelecMusicActivity" />
+        <activity
+            android:name=".WaveformActivity"
+            android:noHistory="true" />
+
+        <service
+            android:name=".service.BluetoothService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>

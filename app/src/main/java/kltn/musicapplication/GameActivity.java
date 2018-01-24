@@ -1,10 +1,12 @@
 package kltn.musicapplication;
 
+import android.app.AlertDialog;
 import android.app.WallpaperManager;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
@@ -58,9 +60,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
     private String effect;
 
-    private GestureDetector gestureDetector;
-    private float initialX, initialY;
-
+    protected boolean option = true;
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -107,21 +107,6 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         else
             toggleButton_connect.setToggleOff();
 
-        gestureDetector = new GestureDetector(this, new MyGesture());
-        /*coordinatorLayout_connect.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                gestureDetector.onTouchEvent(motionEvent);
-                return true;
-            }
-        });
-        relativeLayout.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                gestureDetector.onTouchEvent(motionEvent);
-                return true;
-            }
-        });*/
         listenerOnClick();
         Reset();
         toggleButton_connect.setOnToggleChanged(new ToggleButton.OnToggleChanged() {
@@ -189,37 +174,6 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    /*private void SendDataSel(){
-        switch (bluetooth.getState()){
-            case Bluetooth.STATE_CONNECTED:
-                bluetooth.send(effect.getCode());
-                break;
-            case Bluetooth.STATE_CONNECTING:
-                Snackbar.make(coordinatorLayout_connect, "Connecting. Please waiting...", Snackbar.LENGTH_SHORT).show();
-                break;
-            case Bluetooth.STATE_ERROR:
-                Snackbar.make(coordinatorLayout_connect, "Connect error. Please Reconnect !", Snackbar.LENGTH_SHORT).setAction("Reconnect", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        button_reconnect.setEnabled(false);
-                        bluetooth.disconnect();
-                        bluetooth.connectToDevice(bluetoothDevice);
-                    }
-                }).show();
-                break;
-            case Bluetooth.STATE_NONE:
-                Snackbar.make(coordinatorLayout_connect, "You are not Connect, Please Connect", Snackbar.LENGTH_SHORT).setAction("Connect", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        button_reconnect.setEnabled(false);
-                        bluetooth.disconnect();
-                        bluetooth.connectToDevice(bluetoothDevice);
-                    }
-                }).show();
-                break;
-        }
-    }*/
-
     private class MyGesture extends GestureDetector.SimpleOnGestureListener {
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
@@ -233,44 +187,32 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        gestureDetector.onTouchEvent(event);
-        /*int action = event.getActionMasked();
-        switch (action) {
+        BacktoPre();
+        return false;
+    }
 
-            case MotionEvent.ACTION_DOWN:
-                initialX = event.getX();
-                initialY = event.getY();
-                break;
+    @Override
+    public void onBackPressed() {
+        BacktoPre();
+    }
 
-            case MotionEvent.ACTION_MOVE:
-                break;
-
-            case MotionEvent.ACTION_UP:
-                float finalX = event.getX();
-                float finalY = event.getY();
-
-                if (initialX < finalX) {
-                    finish();
-                }
-
-                if (initialX > finalX) {
-                }
-
-                if (initialY < finalY) {
-                }
-
-                if (initialY > finalY) {
-                }
-
-                break;
-
-            case MotionEvent.ACTION_CANCEL:
-                break;
-
-            case MotionEvent.ACTION_OUTSIDE:
-                break;
-        }*/
-        return super.onTouchEvent(event);
+    private void BacktoPre(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Question");
+        builder.setMessage("Do you want to back?");
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                finish();
+            }
+        });
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.cancel();
+            }
+        });
+        builder.create().show();
     }
 
     @Override
@@ -293,6 +235,12 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         unregisterReceiver(mReceiver);
     }
 
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        reconnect();
+    }
+
     public void reconnect(){
         button_reconnect.setEnabled(false);
         bluetooth.disconnect();
@@ -309,23 +257,6 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             default:
 
-
-            /*switch (v.getId()) {
-                case R.id.btnStart:
-                    effect = "Start";
-                    Reset();
-                    break;
-                case R.id.btnStop:
-                    effect = "Stop";
-                    for (int i = 0; i < 5; i++) {
-                        for (int j = 0; j < 5; j++) {
-                            btn[i][j].setEnabled(false);
-                        }
-                    }
-                    break;
-                default:
-                    break;
-            }*/
             if (bluetooth.getState() == Bluetooth.STATE_CONNECTED) {
                 if (check) {
                     switch (v.getId()) {
@@ -835,6 +766,10 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         public void handleMessage(Message msg) {
             final GameActivity activity = mActivity.get();
+            if (activity.bluetooth.getState() == Bluetooth.STATE_CONNECTED && activity.option == true){
+                activity.bluetooth.send("op3");
+                activity.check = false;
+            }
             switch (msg.what) {
                 case Bluetooth.MESSAGE_STATE_CHANGE:
                     switch (msg.arg1) {

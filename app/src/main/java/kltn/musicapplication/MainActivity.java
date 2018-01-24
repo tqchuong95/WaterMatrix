@@ -1,6 +1,5 @@
 package kltn.musicapplication;
 
-import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.WallpaperManager;
 import android.bluetooth.BluetoothAdapter;
@@ -42,6 +41,7 @@ import kltn.musicapplication.views.ToggleButton;
 public class MainActivity extends AppCompatActivity {
     public static final String EXTRA_DEVICE = "extra_device";
     public static final String EXTRA_BLUETOOTH = "extra_ble";
+    public static final String EXTRA_OPTION = "extra_option";
 
     public static int SWIPE_THRESHOLD = 100;
     public static int SWIPE_VELOCITY_THRESHOLD = 100;
@@ -97,12 +97,13 @@ public class MainActivity extends AppCompatActivity {
             toggleButton.setToggleOn();
 
         // Quick permission check
-        int permissionCheck = this.checkSelfPermission("Manifest.permission.ACCESS_FINE_LOCATION");
+        /*int permissionCheck = this.checkSelfPermission("Manifest.permission.ACCESS_FINE_LOCATION");
         permissionCheck += this.checkSelfPermission("Manifest.permission.ACCESS_COARSE_LOCATION");
         if (permissionCheck != 0) {
 
-            this.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1001); //Any number
-        }
+            this.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION}, 1001); //Any number
+        }*/
 
 
         button_search.setOnClickListener(new View.OnClickListener() {
@@ -134,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
                         .setPositiveButton("Connect", new DialogInterface.OnClickListener() {
                             @Override public void onClick(DialogInterface dialog, int which) {
                                 progressBar_toolbar.setVisibility(View.INVISIBLE);
-                                bluetooth.getBluetoothAdapter().cancelDiscovery();
+                                //bluetooth.getBluetoothAdapter().cancelDiscovery();
                                 Intent intent = new Intent(MainActivity.this, StartActivity.class);
                                 intent.putExtra(EXTRA_DEVICE, device);
                                 startActivity(intent);

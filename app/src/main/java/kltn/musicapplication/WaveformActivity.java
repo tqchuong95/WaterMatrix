@@ -139,6 +139,8 @@ public class WaveformActivity extends AppCompatActivity implements View.OnClickL
     private int mMarkerRightInset;
     private int mMarkerTopOffset;
     private int mMarkerBottomOffset;
+
+    protected boolean check = true;
     
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     protected void onCreate(Bundle savedInstanceState) {
@@ -382,7 +384,7 @@ public class WaveformActivity extends AppCompatActivity implements View.OnClickL
     private void outEffect(){
         String data = "";
         while (mSetTimeStart.size() > pos) {
-            data = data + mEffects.get(pos).getCode() + " " +
+            data = data + mEffects.get(pos).getCode() + "-" +
                     formatDecimal(mWaveformView.pixelsToSeconds(mSetTimeEnd.get(pos) - mSetTimeStart.get(pos))) + ";";
             /*try {
                 if (bluetooth.getState() == Bluetooth.STATE_CONNECTED) {
@@ -447,6 +449,12 @@ public class WaveformActivity extends AppCompatActivity implements View.OnClickL
         unregisterReceiver(mReceiver);
     }
 
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        reconnect();
+    }
+
     public void reconnect(){
         button_reconnect.setEnabled(false);
         bluetooth.disconnect();
@@ -484,6 +492,10 @@ public class WaveformActivity extends AppCompatActivity implements View.OnClickL
         @Override
         public void handleMessage(Message msg) {
             final WaveformActivity activity = mActivity.get();
+            if (activity.bluetooth.getState() == Bluetooth.STATE_CONNECTED && activity.check == true){
+                activity.bluetooth.send("op5");
+                activity.check = false;
+            }
             switch (msg.what) {
                 case Bluetooth.MESSAGE_STATE_CHANGE:
                     switch (msg.arg1) {
